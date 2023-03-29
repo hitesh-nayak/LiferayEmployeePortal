@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.liferay.employee.service.model.Employee">
+		<field name="companyEmpId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="empFirstName" type="String" />
+		<field name="empLastName" type="String" />
+		<field name="email" type="String" />
+		<field name="phone" type="String" />
+		<field name="companyName" type="String" />
+		<field name="profImageId" type="long" />
+	</model>
+</model-hints>
