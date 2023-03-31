@@ -1,0 +1,4 @@
+Bundle-Name: Employee-Panel
+Bundle-SymbolicName: com.liferay.employee.panel
+Bundle-Version: 1.0.0
+Export-Package: com.liferay.employee.panel.constants

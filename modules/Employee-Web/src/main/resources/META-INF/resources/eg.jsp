@@ -1,7 +1,21 @@
 <%@ include file="init.jsp" %>
+<%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
 
 <%@ page import="com.liferay.employee.service.service.EmployeeLocalServiceUtil"%>
 <%@ page import="java.util.List"%>
+
+
+
+<% 
+	Long companyEmpId = ParamUtil.getLong(actionRequest ,"companyEmpId");
+	Long profImageId = ParamUtil.getLong(actionRequest, "profImageId");
+	String empFirstName = ParamUtil.getString(actionRequest, "empFirstName");
+	String empLastName = ParamUtil.getString(actionRequest, "empLastName");
+	String phone = ParamUtil.getString(actionRequest, "phone");
+	String email  = ParamUtil.getString(actionRequest, "email");
+	String companyName  = ParamUtil.getString(actionRequest, "companyName");
+	String groupId= ParamUtil.getString(actionRequest, "groupId");
+ %>	
 
 <%@ page import="com.liferay.portal.kernel.dao.orm.QueryUtil"%>
 <table class="table table-striped">
@@ -16,6 +30,7 @@
         <th>group id</th>
         <th colspan="2" style="width: 100px">Action</th>
     </tr>
+    <% List <Employee> employeeList = EmployeeLocalServiceUtil.getEmployees(QueryUtil.ALL_POS, QueryUtil.ALL_POS); %>
     <c:forEach items="${employeeList}" var="employee">  
     
         <portlet:renderURL var="updateEmployeeRenderURL">
