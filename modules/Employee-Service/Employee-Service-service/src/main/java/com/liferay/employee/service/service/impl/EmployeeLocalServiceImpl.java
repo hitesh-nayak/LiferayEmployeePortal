@@ -14,8 +14,18 @@
 
 package com.liferay.employee.service.service.impl;
 
+import com.liferay.employee.service.model.Employee;
+import com.liferay.employee.service.service.EmployeeLocalServiceUtil;
 import com.liferay.employee.service.service.base.EmployeeLocalServiceBaseImpl;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -27,4 +37,40 @@ import org.osgi.service.component.annotations.Component;
 	service = AopService.class
 )
 public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
+	
+	public  List<Employee> getEmployeesList(){
+		
+//		List<Employee> employeeList = new ArrayList<>();
+//		try {
+//			employeeList = 
+//			employeePersistence.findAll();
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
+		return employeePersistence.findAll();
+		
+	}
+//	@Override
+//	@Indexable(type = IndexableType.REINDEX)
+//	public Employee addEmployee(Employee employee) {
+//		
+//		return employeeLocalService.addEmployee(employee);
+//	}
+//	
+//	@Override
+//	@Indexable(type = IndexableType.REINDEX)
+//	public Employee updateEmployee(Employee employee) {
+//		
+//		return employeeLocalService.updateEmployee(employee);
+//	}
+//	
+//	@Override
+//	@Indexable(type = IndexableType.DELETE)
+//	public Employee deleteEmployee(long companyEmployeeId) throws PortalException {
+//		
+//		return employeeLocalService.deleteEmployee(companyEmployeeId);
+//	}
+	
 }

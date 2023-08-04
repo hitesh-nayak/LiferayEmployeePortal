@@ -17,6 +17,7 @@ package com.liferay.employee.service.model;
 import com.liferay.portal.kernel.model.ModelWrapper;
 import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,20 +42,29 @@ public class EmployeeWrapper
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
+		attributes.put("uuid", getUuid());
 		attributes.put("companyEmpId", getCompanyEmpId());
 		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
 		attributes.put("empFirstName", getEmpFirstName());
 		attributes.put("empLastName", getEmpLastName());
 		attributes.put("email", getEmail());
 		attributes.put("phone", getPhone());
 		attributes.put("companyName", getCompanyName());
 		attributes.put("profImageId", getProfImageId());
+		attributes.put("createDate", getCreateDate());
 
 		return attributes;
 	}
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
 		Long companyEmpId = (Long)attributes.get("companyEmpId");
 
 		if (companyEmpId != null) {
@@ -65,6 +75,12 @@ public class EmployeeWrapper
 
 		if (groupId != null) {
 			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
 		}
 
 		String empFirstName = (String)attributes.get("empFirstName");
@@ -102,6 +118,12 @@ public class EmployeeWrapper
 		if (profImageId != null) {
 			setProfImageId(profImageId);
 		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
 	}
 
 	@Override
@@ -120,6 +142,16 @@ public class EmployeeWrapper
 	}
 
 	/**
+	 * Returns the company ID of this employee.
+	 *
+	 * @return the company ID of this employee
+	 */
+	@Override
+	public long getCompanyId() {
+		return model.getCompanyId();
+	}
+
+	/**
 	 * Returns the company name of this employee.
 	 *
 	 * @return the company name of this employee
@@ -127,6 +159,16 @@ public class EmployeeWrapper
 	@Override
 	public String getCompanyName() {
 		return model.getCompanyName();
+	}
+
+	/**
+	 * Returns the create date of this employee.
+	 *
+	 * @return the create date of this employee
+	 */
+	@Override
+	public Date getCreateDate() {
+		return model.getCreateDate();
 	}
 
 	/**
@@ -199,6 +241,16 @@ public class EmployeeWrapper
 		return model.getProfImageId();
 	}
 
+	/**
+	 * Returns the uuid of this employee.
+	 *
+	 * @return the uuid of this employee
+	 */
+	@Override
+	public String getUuid() {
+		return model.getUuid();
+	}
+
 	@Override
 	public void persist() {
 		model.persist();
@@ -215,6 +267,16 @@ public class EmployeeWrapper
 	}
 
 	/**
+	 * Sets the company ID of this employee.
+	 *
+	 * @param companyId the company ID of this employee
+	 */
+	@Override
+	public void setCompanyId(long companyId) {
+		model.setCompanyId(companyId);
+	}
+
+	/**
 	 * Sets the company name of this employee.
 	 *
 	 * @param companyName the company name of this employee
@@ -222,6 +284,16 @@ public class EmployeeWrapper
 	@Override
 	public void setCompanyName(String companyName) {
 		model.setCompanyName(companyName);
+	}
+
+	/**
+	 * Sets the create date of this employee.
+	 *
+	 * @param createDate the create date of this employee
+	 */
+	@Override
+	public void setCreateDate(Date createDate) {
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -292,6 +364,16 @@ public class EmployeeWrapper
 	@Override
 	public void setProfImageId(long profImageId) {
 		model.setProfImageId(profImageId);
+	}
+
+	/**
+	 * Sets the uuid of this employee.
+	 *
+	 * @param uuid the uuid of this employee
+	 */
+	@Override
+	public void setUuid(String uuid) {
+		model.setUuid(uuid);
 	}
 
 	@Override

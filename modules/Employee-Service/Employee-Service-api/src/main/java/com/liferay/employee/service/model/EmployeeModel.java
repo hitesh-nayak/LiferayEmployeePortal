@@ -16,6 +16,9 @@ package com.liferay.employee.service.model;
 
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.ShardedModel;
+
+import java.util.Date;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -31,7 +34,7 @@ import org.osgi.annotation.versioning.ProviderType;
  * @generated
  */
 @ProviderType
-public interface EmployeeModel extends BaseModel<Employee> {
+public interface EmployeeModel extends BaseModel<Employee>, ShardedModel {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -52,6 +55,21 @@ public interface EmployeeModel extends BaseModel<Employee> {
 	 * @param primaryKey the primary key of this employee
 	 */
 	public void setPrimaryKey(long primaryKey);
+
+	/**
+	 * Returns the uuid of this employee.
+	 *
+	 * @return the uuid of this employee
+	 */
+	@AutoEscape
+	public String getUuid();
+
+	/**
+	 * Sets the uuid of this employee.
+	 *
+	 * @param uuid the uuid of this employee
+	 */
+	public void setUuid(String uuid);
 
 	/**
 	 * Returns the company emp ID of this employee.
@@ -80,6 +98,22 @@ public interface EmployeeModel extends BaseModel<Employee> {
 	 * @param groupId the group ID of this employee
 	 */
 	public void setGroupId(long groupId);
+
+	/**
+	 * Returns the company ID of this employee.
+	 *
+	 * @return the company ID of this employee
+	 */
+	@Override
+	public long getCompanyId();
+
+	/**
+	 * Sets the company ID of this employee.
+	 *
+	 * @param companyId the company ID of this employee
+	 */
+	@Override
+	public void setCompanyId(long companyId);
 
 	/**
 	 * Returns the emp first name of this employee.
@@ -169,6 +203,20 @@ public interface EmployeeModel extends BaseModel<Employee> {
 	 * @param profImageId the prof image ID of this employee
 	 */
 	public void setProfImageId(long profImageId);
+
+	/**
+	 * Returns the create date of this employee.
+	 *
+	 * @return the create date of this employee
+	 */
+	public Date getCreateDate();
+
+	/**
+	 * Sets the create date of this employee.
+	 *
+	 * @param createDate the create date of this employee
+	 */
+	public void setCreateDate(Date createDate);
 
 	@Override
 	public Employee cloneWithOriginalValues();

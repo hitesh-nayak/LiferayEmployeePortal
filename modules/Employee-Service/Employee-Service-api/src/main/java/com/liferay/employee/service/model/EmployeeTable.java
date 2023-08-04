@@ -19,6 +19,8 @@ import com.liferay.petra.sql.dsl.base.BaseTable;
 
 import java.sql.Types;
 
+import java.util.Date;
+
 /**
  * The table class for the &quot;Company_Employee&quot; database table.
  *
@@ -30,10 +32,14 @@ public class EmployeeTable extends BaseTable<EmployeeTable> {
 
 	public static final EmployeeTable INSTANCE = new EmployeeTable();
 
+	public final Column<EmployeeTable, String> uuid = createColumn(
+		"uuid_", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<EmployeeTable, Long> companyEmpId = createColumn(
 		"companyEmpId", Long.class, Types.BIGINT, Column.FLAG_PRIMARY);
 	public final Column<EmployeeTable, Long> groupId = createColumn(
 		"groupId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
+	public final Column<EmployeeTable, Long> companyId = createColumn(
+		"companyId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
 	public final Column<EmployeeTable, String> empFirstName = createColumn(
 		"empFirstName", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<EmployeeTable, String> empLastName = createColumn(
@@ -46,6 +52,8 @@ public class EmployeeTable extends BaseTable<EmployeeTable> {
 		"companyName", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<EmployeeTable, Long> profImageId = createColumn(
 		"profImageId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
+	public final Column<EmployeeTable, Date> createDate = createColumn(
+		"createDate", Date.class, Types.TIMESTAMP, Column.FLAG_DEFAULT);
 
 	private EmployeeTable() {
 		super("Company_Employee", EmployeeTable::new);

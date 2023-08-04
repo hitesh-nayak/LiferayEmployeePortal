@@ -3,11 +3,14 @@ package com.liferay.employee.web.portlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liferay.adaptive.media.image.model.AMImageEntry;
 import com.liferay.adaptive.media.image.service.AMImageEntryLocalServiceUtil;
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.service.AssetEntryLocalServiceUtil;
 import com.liferay.counter.kernel.service.CounterLocalService;
 import com.liferay.document.library.kernel.service.DLAppLocalServiceUtil;
 import com.liferay.employee.service.model.Employee;
 import com.liferay.employee.service.service.EmployeeLocalService;
 import com.liferay.employee.service.service.EmployeeLocalServiceUtil;
+import com.liferay.employee.service.service.persistence.EmployeePersistence;
 import com.liferay.employee.web.constants.EmployeeWebPortletKeys;
 import com.liferay.headless.delivery.dto.v1_0.Document;
 import com.liferay.headless.delivery.resource.v1_0.DocumentResource;
@@ -15,8 +18,13 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.repository.model.FileVersion;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
+import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -30,6 +38,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,6 +52,7 @@ import javax.portlet.ProcessAction;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.Part;
+import javax.ws.rs.core.NewCookie;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -57,11 +69,27 @@ import org.osgi.service.component.annotations.Reference;
 public class EmployeeWebPortlet extends MVCPortlet {
 
 	@Reference
-	EmployeeLocalService employeeLocalService;
+	private EmployeeLocalService employeeLocalService;
 	@Reference
-	CounterLocalService counterLocalService;
+	private CounterLocalService counterLocalService;
 	@Reference
-	DocumentResource.Factory documentResourceFactory;
+	private DocumentResource.Factory documentResourceFactory;
+	@Reference
+	private EmployeePersistence employeePersistence;
+
+	public List<Employee> getEmployees() {
+
+		List<Employee> employeeList = new ArrayList<>();
+		try {
+			employeeList = employeePersistence.findAll();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return employeeList;
+
+	}
 
 	public DocumentResource getDocumentResource(ThemeDisplay themeDisplay, ActionRequest actionRequest,
 			ActionResponse actionResponse) {
@@ -80,7 +108,8 @@ public class EmployeeWebPortlet extends MVCPortlet {
 		String email = ParamUtil.getString(actionRequest, "email");
 		String phone = ParamUtil.getString(actionRequest, "phone");
 		String companyName = ParamUtil.getString(actionRequest, "companyName");
-		Long profImageId = counterLocalService.increment(Employee.class.getName());
+		// Long profImageId = counterLocalService.increment(Employee.class.getName());
+		Date joinDate = ParamUtil.getDate(actionRequest, "joinDate", new SimpleDateFormat("yyyy-MM-dd"));
 
 		try {
 			UploadPortletRequest portletRequest = PortalUtil.getUploadPortletRequest(actionRequest);
@@ -116,7 +145,21 @@ public class EmployeeWebPortlet extends MVCPortlet {
 			employee.setEmail(email);
 			employee.setPhone(phone);
 			employee.setProfImageId(document.getId());
-			employeeLocalService.addEmployee(employee);
+			employee.setCreateDate(joinDate);
+			employee.setCompanyId(themeDisplay.getUser().getCompanyId());
+
+			employee = employeeLocalService.addEmployee(employee);
+			
+
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(Employee.class.getName(), actionRequest);
+			AssetEntry assetEntry = AssetEntryLocalServiceUtil.updateEntry(themeDisplay.getUserId(),
+					serviceContext.getScopeGroupId(), new Date(), new Date(), Employee.class.getName(),
+					employee.getCompanyEmpId(), employee.getUuid(), 0, null, null, true, false, new Date(), null,
+					new Date(), null, ContentTypes.TEXT_HTML, "employee", "employee", null,
+					null, null, 0, 0, null);
+			Indexer<Employee> indexer = IndexerRegistryUtil.nullSafeGetIndexer(Employee.class);
+			indexer.reindex(employee);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -160,7 +203,16 @@ public class EmployeeWebPortlet extends MVCPortlet {
 
 			getDocumentResource(themeDisplay, actionRequest, actionResponse)
 					.putDocument(ParamUtil.getLong(actionRequest, "profImageId"), multipartBody);
-			employeeLocalService.updateEmployee(employee);
+			employee = employeeLocalService.updateEmployee(employee);
+			
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(Employee.class.getName(), actionRequest);
+			AssetEntry assetEntry = AssetEntryLocalServiceUtil.updateEntry(themeDisplay.getUserId(),
+					serviceContext.getScopeGroupId(), new Date(), new Date(), Employee.class.getName(),
+					employee.getCompanyEmpId(), employee.getUuid(), 0, null, null, true, false, new Date(), null,
+					new Date(), null, ContentTypes.TEXT_HTML, "employee", "employee", null,
+					null, null, 0, 0, null);
+			Indexer<Employee> indexer = IndexerRegistryUtil.nullSafeGetIndexer(Employee.class);
+			indexer.reindex(employee);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -185,15 +237,16 @@ public class EmployeeWebPortlet extends MVCPortlet {
 	}
 
 	@Override
-	public void render(RenderRequest renderRequest, RenderResponse renderResponse) {
+	public void render(RenderRequest renderRequest, RenderResponse renderResponse)
+			throws IOException, PortletException {
 		try {
-			List<Employee> employeeList = EmployeeLocalServiceUtil.getEmployees(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-			renderRequest.setAttribute("employeeList", employeeList);
-
-			super.render(renderRequest, renderResponse);
+			renderRequest.setAttribute("employeeList", EmpUtil.getEmployees());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+		super.render(renderRequest, renderResponse);
+
 	}
+
 }

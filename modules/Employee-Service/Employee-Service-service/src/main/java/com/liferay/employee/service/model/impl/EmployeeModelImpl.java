@@ -68,28 +68,33 @@ public class EmployeeModelImpl
 	public static final String TABLE_NAME = "Company_Employee";
 
 	public static final Object[][] TABLE_COLUMNS = {
-		{"companyEmpId", Types.BIGINT}, {"groupId", Types.BIGINT},
+		{"uuid_", Types.VARCHAR}, {"companyEmpId", Types.BIGINT},
+		{"groupId", Types.BIGINT}, {"companyId", Types.BIGINT},
 		{"empFirstName", Types.VARCHAR}, {"empLastName", Types.VARCHAR},
 		{"email", Types.VARCHAR}, {"phone", Types.VARCHAR},
-		{"companyName", Types.VARCHAR}, {"profImageId", Types.BIGINT}
+		{"companyName", Types.VARCHAR}, {"profImageId", Types.BIGINT},
+		{"createDate", Types.TIMESTAMP}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
 		new HashMap<String, Integer>();
 
 	static {
+		TABLE_COLUMNS_MAP.put("uuid_", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("companyEmpId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("groupId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("empFirstName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("empLastName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("email", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("phone", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("companyName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("profImageId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table Company_Employee (companyEmpId LONG not null primary key,groupId LONG,empFirstName VARCHAR(75) null,empLastName VARCHAR(75) null,email VARCHAR(75) null,phone VARCHAR(75) null,companyName VARCHAR(75) null,profImageId LONG)";
+		"create table Company_Employee (uuid_ VARCHAR(75) null,companyEmpId LONG not null primary key,groupId LONG,companyId LONG,empFirstName VARCHAR(75) null,empLastName VARCHAR(75) null,email VARCHAR(75) null,phone VARCHAR(75) null,companyName VARCHAR(75) null,profImageId LONG,createDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table Company_Employee";
 
@@ -115,19 +120,31 @@ public class EmployeeModelImpl
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long COMPANYNAME_COLUMN_BITMASK = 2L;
+	public static final long COMPANYID_COLUMN_BITMASK = 2L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long EMPLASTNAME_COLUMN_BITMASK = 4L;
+	public static final long COMPANYNAME_COLUMN_BITMASK = 4L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long GROUPID_COLUMN_BITMASK = 8L;
+	public static final long EMPLASTNAME_COLUMN_BITMASK = 8L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long GROUPID_COLUMN_BITMASK = 16L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long UUID_COLUMN_BITMASK = 32L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
@@ -238,6 +255,9 @@ public class EmployeeModelImpl
 		Map<String, BiConsumer<Employee, ?>> attributeSetterBiConsumers =
 			new LinkedHashMap<String, BiConsumer<Employee, ?>>();
 
+		attributeGetterFunctions.put("uuid", Employee::getUuid);
+		attributeSetterBiConsumers.put(
+			"uuid", (BiConsumer<Employee, String>)Employee::setUuid);
 		attributeGetterFunctions.put("companyEmpId", Employee::getCompanyEmpId);
 		attributeSetterBiConsumers.put(
 			"companyEmpId",
@@ -245,6 +265,9 @@ public class EmployeeModelImpl
 		attributeGetterFunctions.put("groupId", Employee::getGroupId);
 		attributeSetterBiConsumers.put(
 			"groupId", (BiConsumer<Employee, Long>)Employee::setGroupId);
+		attributeGetterFunctions.put("companyId", Employee::getCompanyId);
+		attributeSetterBiConsumers.put(
+			"companyId", (BiConsumer<Employee, Long>)Employee::setCompanyId);
 		attributeGetterFunctions.put("empFirstName", Employee::getEmpFirstName);
 		attributeSetterBiConsumers.put(
 			"empFirstName",
@@ -267,11 +290,43 @@ public class EmployeeModelImpl
 		attributeSetterBiConsumers.put(
 			"profImageId",
 			(BiConsumer<Employee, Long>)Employee::setProfImageId);
+		attributeGetterFunctions.put("createDate", Employee::getCreateDate);
+		attributeSetterBiConsumers.put(
+			"createDate", (BiConsumer<Employee, Date>)Employee::setCreateDate);
 
 		_attributeGetterFunctions = Collections.unmodifiableMap(
 			attributeGetterFunctions);
 		_attributeSetterBiConsumers = Collections.unmodifiableMap(
 			(Map)attributeSetterBiConsumers);
+	}
+
+	@JSON
+	@Override
+	public String getUuid() {
+		if (_uuid == null) {
+			return "";
+		}
+		else {
+			return _uuid;
+		}
+	}
+
+	@Override
+	public void setUuid(String uuid) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_uuid = uuid;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public String getOriginalUuid() {
+		return getColumnOriginalValue("uuid_");
 	}
 
 	@JSON
@@ -321,6 +376,31 @@ public class EmployeeModelImpl
 	@Deprecated
 	public long getOriginalGroupId() {
 		return GetterUtil.getLong(this.<Long>getColumnOriginalValue("groupId"));
+	}
+
+	@JSON
+	@Override
+	public long getCompanyId() {
+		return _companyId;
+	}
+
+	@Override
+	public void setCompanyId(long companyId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_companyId = companyId;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public long getOriginalCompanyId() {
+		return GetterUtil.getLong(
+			this.<Long>getColumnOriginalValue("companyId"));
 	}
 
 	@JSON
@@ -456,6 +536,21 @@ public class EmployeeModelImpl
 		_profImageId = profImageId;
 	}
 
+	@JSON
+	@Override
+	public Date getCreateDate() {
+		return _createDate;
+	}
+
+	@Override
+	public void setCreateDate(Date createDate) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_createDate = createDate;
+	}
+
 	public long getColumnBitmask() {
 		if (_columnBitmask > 0) {
 			return _columnBitmask;
@@ -483,7 +578,7 @@ public class EmployeeModelImpl
 	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(
-			0, Employee.class.getName(), getPrimaryKey());
+			getCompanyId(), Employee.class.getName(), getPrimaryKey());
 	}
 
 	@Override
@@ -512,14 +607,17 @@ public class EmployeeModelImpl
 	public Object clone() {
 		EmployeeImpl employeeImpl = new EmployeeImpl();
 
+		employeeImpl.setUuid(getUuid());
 		employeeImpl.setCompanyEmpId(getCompanyEmpId());
 		employeeImpl.setGroupId(getGroupId());
+		employeeImpl.setCompanyId(getCompanyId());
 		employeeImpl.setEmpFirstName(getEmpFirstName());
 		employeeImpl.setEmpLastName(getEmpLastName());
 		employeeImpl.setEmail(getEmail());
 		employeeImpl.setPhone(getPhone());
 		employeeImpl.setCompanyName(getCompanyName());
 		employeeImpl.setProfImageId(getProfImageId());
+		employeeImpl.setCreateDate(getCreateDate());
 
 		employeeImpl.resetOriginalValues();
 
@@ -530,9 +628,12 @@ public class EmployeeModelImpl
 	public Employee cloneWithOriginalValues() {
 		EmployeeImpl employeeImpl = new EmployeeImpl();
 
+		employeeImpl.setUuid(this.<String>getColumnOriginalValue("uuid_"));
 		employeeImpl.setCompanyEmpId(
 			this.<Long>getColumnOriginalValue("companyEmpId"));
 		employeeImpl.setGroupId(this.<Long>getColumnOriginalValue("groupId"));
+		employeeImpl.setCompanyId(
+			this.<Long>getColumnOriginalValue("companyId"));
 		employeeImpl.setEmpFirstName(
 			this.<String>getColumnOriginalValue("empFirstName"));
 		employeeImpl.setEmpLastName(
@@ -543,6 +644,8 @@ public class EmployeeModelImpl
 			this.<String>getColumnOriginalValue("companyName"));
 		employeeImpl.setProfImageId(
 			this.<Long>getColumnOriginalValue("profImageId"));
+		employeeImpl.setCreateDate(
+			this.<Date>getColumnOriginalValue("createDate"));
 
 		return employeeImpl;
 	}
@@ -616,9 +719,19 @@ public class EmployeeModelImpl
 	public CacheModel<Employee> toCacheModel() {
 		EmployeeCacheModel employeeCacheModel = new EmployeeCacheModel();
 
+		employeeCacheModel.uuid = getUuid();
+
+		String uuid = employeeCacheModel.uuid;
+
+		if ((uuid != null) && (uuid.length() == 0)) {
+			employeeCacheModel.uuid = null;
+		}
+
 		employeeCacheModel.companyEmpId = getCompanyEmpId();
 
 		employeeCacheModel.groupId = getGroupId();
+
+		employeeCacheModel.companyId = getCompanyId();
 
 		employeeCacheModel.empFirstName = getEmpFirstName();
 
@@ -661,6 +774,15 @@ public class EmployeeModelImpl
 		}
 
 		employeeCacheModel.profImageId = getProfImageId();
+
+		Date createDate = getCreateDate();
+
+		if (createDate != null) {
+			employeeCacheModel.createDate = createDate.getTime();
+		}
+		else {
+			employeeCacheModel.createDate = Long.MIN_VALUE;
+		}
 
 		return employeeCacheModel;
 	}
@@ -723,16 +845,21 @@ public class EmployeeModelImpl
 
 	}
 
+	private String _uuid;
 	private long _companyEmpId;
 	private long _groupId;
+	private long _companyId;
 	private String _empFirstName;
 	private String _empLastName;
 	private String _email;
 	private String _phone;
 	private String _companyName;
 	private long _profImageId;
+	private Date _createDate;
 
 	public <T> T getColumnValue(String columnName) {
+		columnName = _attributeNames.getOrDefault(columnName, columnName);
+
 		Function<Employee, Object> function = _attributeGetterFunctions.get(
 			columnName);
 
@@ -759,14 +886,27 @@ public class EmployeeModelImpl
 	private void _setColumnOriginalValues() {
 		_columnOriginalValues = new HashMap<String, Object>();
 
+		_columnOriginalValues.put("uuid_", _uuid);
 		_columnOriginalValues.put("companyEmpId", _companyEmpId);
 		_columnOriginalValues.put("groupId", _groupId);
+		_columnOriginalValues.put("companyId", _companyId);
 		_columnOriginalValues.put("empFirstName", _empFirstName);
 		_columnOriginalValues.put("empLastName", _empLastName);
 		_columnOriginalValues.put("email", _email);
 		_columnOriginalValues.put("phone", _phone);
 		_columnOriginalValues.put("companyName", _companyName);
 		_columnOriginalValues.put("profImageId", _profImageId);
+		_columnOriginalValues.put("createDate", _createDate);
+	}
+
+	private static final Map<String, String> _attributeNames;
+
+	static {
+		Map<String, String> attributeNames = new HashMap<>();
+
+		attributeNames.put("uuid_", "uuid");
+
+		_attributeNames = Collections.unmodifiableMap(attributeNames);
 	}
 
 	private transient Map<String, Object> _columnOriginalValues;
@@ -780,21 +920,27 @@ public class EmployeeModelImpl
 	static {
 		Map<String, Long> columnBitmasks = new HashMap<>();
 
-		columnBitmasks.put("companyEmpId", 1L);
+		columnBitmasks.put("uuid_", 1L);
 
-		columnBitmasks.put("groupId", 2L);
+		columnBitmasks.put("companyEmpId", 2L);
 
-		columnBitmasks.put("empFirstName", 4L);
+		columnBitmasks.put("groupId", 4L);
 
-		columnBitmasks.put("empLastName", 8L);
+		columnBitmasks.put("companyId", 8L);
 
-		columnBitmasks.put("email", 16L);
+		columnBitmasks.put("empFirstName", 16L);
 
-		columnBitmasks.put("phone", 32L);
+		columnBitmasks.put("empLastName", 32L);
 
-		columnBitmasks.put("companyName", 64L);
+		columnBitmasks.put("email", 64L);
 
-		columnBitmasks.put("profImageId", 128L);
+		columnBitmasks.put("phone", 128L);
+
+		columnBitmasks.put("companyName", 256L);
+
+		columnBitmasks.put("profImageId", 512L);
+
+		columnBitmasks.put("createDate", 1024L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

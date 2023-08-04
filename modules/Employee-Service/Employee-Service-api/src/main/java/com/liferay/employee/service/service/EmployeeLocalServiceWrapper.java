@@ -233,6 +233,21 @@ public class EmployeeLocalServiceWrapper
 		return _employeeLocalService.fetchEmployee(companyEmpId);
 	}
 
+	/**
+	 * Returns the employee matching the UUID and group.
+	 *
+	 * @param uuid the employee's UUID
+	 * @param groupId the primary key of the group
+	 * @return the matching employee, or <code>null</code> if a matching employee could not be found
+	 */
+	@Override
+	public com.liferay.employee.service.model.Employee
+		fetchEmployeeByUuidAndGroupId(String uuid, long groupId) {
+
+		return _employeeLocalService.fetchEmployeeByUuidAndGroupId(
+			uuid, groupId);
+	}
+
 	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery
 		getActionableDynamicQuery() {
@@ -256,6 +271,22 @@ public class EmployeeLocalServiceWrapper
 	}
 
 	/**
+	 * Returns the employee matching the UUID and group.
+	 *
+	 * @param uuid the employee's UUID
+	 * @param groupId the primary key of the group
+	 * @return the matching employee
+	 * @throws PortalException if a matching employee could not be found
+	 */
+	@Override
+	public com.liferay.employee.service.model.Employee
+			getEmployeeByUuidAndGroupId(String uuid, long groupId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _employeeLocalService.getEmployeeByUuidAndGroupId(uuid, groupId);
+	}
+
+	/**
 	 * Returns a range of all the employees.
 	 *
 	 * <p>
@@ -274,6 +305,43 @@ public class EmployeeLocalServiceWrapper
 	}
 
 	/**
+	 * Returns all the employees matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the employees
+	 * @param companyId the primary key of the company
+	 * @return the matching employees, or an empty list if no matches were found
+	 */
+	@Override
+	public java.util.List<com.liferay.employee.service.model.Employee>
+		getEmployeesByUuidAndCompanyId(String uuid, long companyId) {
+
+		return _employeeLocalService.getEmployeesByUuidAndCompanyId(
+			uuid, companyId);
+	}
+
+	/**
+	 * Returns a range of employees matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the employees
+	 * @param companyId the primary key of the company
+	 * @param start the lower bound of the range of employees
+	 * @param end the upper bound of the range of employees (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the range of matching employees, or an empty list if no matches were found
+	 */
+	@Override
+	public java.util.List<com.liferay.employee.service.model.Employee>
+		getEmployeesByUuidAndCompanyId(
+			String uuid, long companyId, int start, int end,
+			com.liferay.portal.kernel.util.OrderByComparator
+				<com.liferay.employee.service.model.Employee>
+					orderByComparator) {
+
+		return _employeeLocalService.getEmployeesByUuidAndCompanyId(
+			uuid, companyId, start, end, orderByComparator);
+	}
+
+	/**
 	 * Returns the number of employees.
 	 *
 	 * @return the number of employees
@@ -281,6 +349,13 @@ public class EmployeeLocalServiceWrapper
 	@Override
 	public int getEmployeesCount() {
 		return _employeeLocalService.getEmployeesCount();
+	}
+
+	@Override
+	public java.util.List<com.liferay.employee.service.model.Employee>
+		getEmployeesList() {
+
+		return _employeeLocalService.getEmployeesList();
 	}
 
 	@Override

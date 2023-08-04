@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import java.util.Date;
+
 /**
  * The cache model class for representing Employee in entity cache.
  *
@@ -59,12 +61,16 @@ public class EmployeeCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(17);
+		StringBundler sb = new StringBundler(23);
 
-		sb.append("{companyEmpId=");
+		sb.append("{uuid=");
+		sb.append(uuid);
+		sb.append(", companyEmpId=");
 		sb.append(companyEmpId);
 		sb.append(", groupId=");
 		sb.append(groupId);
+		sb.append(", companyId=");
+		sb.append(companyId);
 		sb.append(", empFirstName=");
 		sb.append(empFirstName);
 		sb.append(", empLastName=");
@@ -77,6 +83,8 @@ public class EmployeeCacheModel
 		sb.append(companyName);
 		sb.append(", profImageId=");
 		sb.append(profImageId);
+		sb.append(", createDate=");
+		sb.append(createDate);
 		sb.append("}");
 
 		return sb.toString();
@@ -86,8 +94,16 @@ public class EmployeeCacheModel
 	public Employee toEntityModel() {
 		EmployeeImpl employeeImpl = new EmployeeImpl();
 
+		if (uuid == null) {
+			employeeImpl.setUuid("");
+		}
+		else {
+			employeeImpl.setUuid(uuid);
+		}
+
 		employeeImpl.setCompanyEmpId(companyEmpId);
 		employeeImpl.setGroupId(groupId);
+		employeeImpl.setCompanyId(companyId);
 
 		if (empFirstName == null) {
 			employeeImpl.setEmpFirstName("");
@@ -126,6 +142,13 @@ public class EmployeeCacheModel
 
 		employeeImpl.setProfImageId(profImageId);
 
+		if (createDate == Long.MIN_VALUE) {
+			employeeImpl.setCreateDate(null);
+		}
+		else {
+			employeeImpl.setCreateDate(new Date(createDate));
+		}
+
 		employeeImpl.resetOriginalValues();
 
 		return employeeImpl;
@@ -133,9 +156,13 @@ public class EmployeeCacheModel
 
 	@Override
 	public void readExternal(ObjectInput objectInput) throws IOException {
+		uuid = objectInput.readUTF();
+
 		companyEmpId = objectInput.readLong();
 
 		groupId = objectInput.readLong();
+
+		companyId = objectInput.readLong();
 		empFirstName = objectInput.readUTF();
 		empLastName = objectInput.readUTF();
 		email = objectInput.readUTF();
@@ -143,13 +170,23 @@ public class EmployeeCacheModel
 		companyName = objectInput.readUTF();
 
 		profImageId = objectInput.readLong();
+		createDate = objectInput.readLong();
 	}
 
 	@Override
 	public void writeExternal(ObjectOutput objectOutput) throws IOException {
+		if (uuid == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(uuid);
+		}
+
 		objectOutput.writeLong(companyEmpId);
 
 		objectOutput.writeLong(groupId);
+
+		objectOutput.writeLong(companyId);
 
 		if (empFirstName == null) {
 			objectOutput.writeUTF("");
@@ -187,15 +224,19 @@ public class EmployeeCacheModel
 		}
 
 		objectOutput.writeLong(profImageId);
+		objectOutput.writeLong(createDate);
 	}
 
+	public String uuid;
 	public long companyEmpId;
 	public long groupId;
+	public long companyId;
 	public String empFirstName;
 	public String empLastName;
 	public String email;
 	public String phone;
 	public String companyName;
 	public long profImageId;
+	public long createDate;
 
 }

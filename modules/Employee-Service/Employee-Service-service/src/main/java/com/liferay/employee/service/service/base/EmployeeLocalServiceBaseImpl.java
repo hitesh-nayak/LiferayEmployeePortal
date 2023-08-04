@@ -245,6 +245,18 @@ public abstract class EmployeeLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the employee matching the UUID and group.
+	 *
+	 * @param uuid the employee's UUID
+	 * @param groupId the primary key of the group
+	 * @return the matching employee, or <code>null</code> if a matching employee could not be found
+	 */
+	@Override
+	public Employee fetchEmployeeByUuidAndGroupId(String uuid, long groupId) {
+		return employeePersistence.fetchByUUID_G(uuid, groupId);
+	}
+
+	/**
 	 * Returns the employee with the primary key.
 	 *
 	 * @param companyEmpId the primary key of the employee
@@ -336,6 +348,54 @@ public abstract class EmployeeLocalServiceBaseImpl
 		throws PortalException {
 
 		return employeePersistence.findByPrimaryKey(primaryKeyObj);
+	}
+
+	/**
+	 * Returns all the employees matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the employees
+	 * @param companyId the primary key of the company
+	 * @return the matching employees, or an empty list if no matches were found
+	 */
+	@Override
+	public List<Employee> getEmployeesByUuidAndCompanyId(
+		String uuid, long companyId) {
+
+		return employeePersistence.findByUuid_C(uuid, companyId);
+	}
+
+	/**
+	 * Returns a range of employees matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the employees
+	 * @param companyId the primary key of the company
+	 * @param start the lower bound of the range of employees
+	 * @param end the upper bound of the range of employees (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the range of matching employees, or an empty list if no matches were found
+	 */
+	@Override
+	public List<Employee> getEmployeesByUuidAndCompanyId(
+		String uuid, long companyId, int start, int end,
+		OrderByComparator<Employee> orderByComparator) {
+
+		return employeePersistence.findByUuid_C(
+			uuid, companyId, start, end, orderByComparator);
+	}
+
+	/**
+	 * Returns the employee matching the UUID and group.
+	 *
+	 * @param uuid the employee's UUID
+	 * @param groupId the primary key of the group
+	 * @return the matching employee
+	 * @throws PortalException if a matching employee could not be found
+	 */
+	@Override
+	public Employee getEmployeeByUuidAndGroupId(String uuid, long groupId)
+		throws PortalException {
+
+		return employeePersistence.findByUUID_G(uuid, groupId);
 	}
 
 	/**
