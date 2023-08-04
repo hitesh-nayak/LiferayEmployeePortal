@@ -42,10 +42,11 @@ public class EmployeeDeletionMessageListener extends BaseMessageListener {
 				cronExpresion);
 		_schedulerEntryImpl = new SchedulerEntryImpl(getClass().getName(), jobTrigger);
 		if (_initialized) {
-            deactivate();
-        }
+			deactivate();
+		}
 
 		_schedulerEngineHelper.register(this, _schedulerEntryImpl, DestinationNames.SCHEDULER_DISPATCH);
+		groupNameString = EmployeeDeletionMessageListener.class.getName();
 		_log.debug("Scheduled task registered: " + cronExpresion);
 		_initialized = true;
 
@@ -57,13 +58,12 @@ public class EmployeeDeletionMessageListener extends BaseMessageListener {
 	}
 
 	private void unregister() {
-		
-		EmployeeDeletionMessageListener  deletionMessageListener = new EmployeeDeletionMessageListener();
 
 		if (_initialized) {
 
 			try {
-				_schedulerEngineHelper.unschedule(EmployeeDeletionMessageListener.class.getName(), groupNameString, getStorageType());
+				_schedulerEngineHelper.unschedule(EmployeeDeletionMessageListener.class.getName(), groupNameString,
+						getStorageType());
 			} catch (SchedulerException se) {
 				if (_log.isWarnEnabled()) {
 					_log.warn("Unable to unschedule trigger", se);
@@ -75,19 +75,21 @@ public class EmployeeDeletionMessageListener extends BaseMessageListener {
 
 		_initialized = false;
 	}
-	
+
 	protected StorageType getStorageType() {
-        if (_schedulerEntryImpl instanceof StorageTypeAware) {
-            return ((StorageTypeAware) _schedulerEntryImpl).getStorageType();
-        }
-        return StorageType.MEMORY_CLUSTERED;
-    }
+		if (_schedulerEntryImpl instanceof StorageTypeAware) {
+			return ((StorageTypeAware) _schedulerEntryImpl).getStorageType();
+		}
+		return StorageType.MEMORY_CLUSTERED;
+	}
 
 	@Override
 	protected void doReceive(Message message) throws Exception {
 
 		_log.info("Executing scheduler");
-		_log.info(getEmployees().size() + " employee(s) is/are over 60 days old. Log from Message Listener");
+		_log.info(getEmployees().size()
+				+ " employee(s) is/are over 60 days old. Log from Message Listener. Scheduler GroupName is "
+				+ groupNameString + ".");
 	}
 
 	private List<Employee> getEmployees() {
@@ -103,7 +105,7 @@ public class EmployeeDeletionMessageListener extends BaseMessageListener {
 		return EmployeeLocalServiceUtil.dynamicQuery(dQuery);
 
 	}
-	
+
 	private static String groupNameString;
 	private volatile boolean _initialized;
 	private SchedulerEntryImpl _schedulerEntryImpl = null;
