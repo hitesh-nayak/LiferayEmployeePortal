@@ -11,17 +11,20 @@ import com.liferay.employee.service.model.Employee;
 import com.liferay.employee.service.service.EmployeeLocalService;
 import com.liferay.employee.service.service.EmployeeLocalServiceUtil;
 import com.liferay.employee.service.service.persistence.EmployeePersistence;
+import com.liferay.employee.web.configuration.EmployeePortletConfiguration;
 import com.liferay.employee.web.constants.EmployeeWebPortletKeys;
 import com.liferay.headless.delivery.dto.v1_0.Document;
 import com.liferay.headless.delivery.resource.v1_0.DocumentResource;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.ContentTypes;
@@ -60,11 +63,12 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author me
  */
-@Component(immediate = true, property = { "com.liferay.portlet.display-category=category.sample",
-		"com.liferay.portlet.header-portlet-css=/css/main.css", "com.liferay.portlet.instanceable=true",
-		"javax.portlet.display-name=EmployeeWeb", "javax.portlet.init-param.template-path=/",
+@Component(immediate = true, configurationPid = "com.liferay.employee.web.configuration.EmployeePortletConfiguration", property = {
+		"com.liferay.portlet.display-category=category.sample",
+		"javax.portlet.init-param.config-template=/configuration.jsp",
+		"com.liferay.portlet.header-portlet-css=/css/main.css", "javax.portlet.display-name=EmployeeWeb",
 		"javax.portlet.init-param.view-template=/view.jsp", "javax.portlet.name=" + EmployeeWebPortletKeys.EMPLOYEEWEB,
-		"javax.portlet.resource-bundle=content.Language",
+
 		"javax.portlet.security-role-ref=power-user,user" }, service = Portlet.class)
 public class EmployeeWebPortlet extends MVCPortlet {
 
@@ -76,6 +80,20 @@ public class EmployeeWebPortlet extends MVCPortlet {
 	private DocumentResource.Factory documentResourceFactory;
 	@Reference
 	private EmployeePersistence employeePersistence;
+
+	private EmployeePortletConfiguration _getEmpPortletConfiguration(RenderRequest renderRequest)
+			throws PortletException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
+
+		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
+
+		try {
+			return portletDisplay.getPortletInstanceConfiguration(EmployeePortletConfiguration.class);
+		} catch (ConfigurationException configurationException) {
+			throw new PortletException(configurationException);
+		}
+	}
 
 	public List<Employee> getEmployees() {
 
@@ -149,14 +167,12 @@ public class EmployeeWebPortlet extends MVCPortlet {
 			employee.setCompanyId(themeDisplay.getUser().getCompanyId());
 
 			employee = employeeLocalService.addEmployee(employee);
-			
 
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(Employee.class.getName(), actionRequest);
 			AssetEntry assetEntry = AssetEntryLocalServiceUtil.updateEntry(themeDisplay.getUserId(),
 					serviceContext.getScopeGroupId(), new Date(), new Date(), Employee.class.getName(),
 					employee.getCompanyEmpId(), employee.getUuid(), 0, null, null, true, false, new Date(), null,
-					new Date(), null, ContentTypes.TEXT_HTML, "employee", "employee", null,
-					null, null, 0, 0, null);
+					new Date(), null, ContentTypes.TEXT_HTML, "employee", "employee", null, null, null, 0, 0, null);
 			Indexer<Employee> indexer = IndexerRegistryUtil.nullSafeGetIndexer(Employee.class);
 			indexer.reindex(employee);
 
@@ -204,13 +220,12 @@ public class EmployeeWebPortlet extends MVCPortlet {
 			getDocumentResource(themeDisplay, actionRequest, actionResponse)
 					.putDocument(ParamUtil.getLong(actionRequest, "profImageId"), multipartBody);
 			employee = employeeLocalService.updateEmployee(employee);
-			
+
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(Employee.class.getName(), actionRequest);
 			AssetEntry assetEntry = AssetEntryLocalServiceUtil.updateEntry(themeDisplay.getUserId(),
 					serviceContext.getScopeGroupId(), new Date(), new Date(), Employee.class.getName(),
 					employee.getCompanyEmpId(), employee.getUuid(), 0, null, null, true, false, new Date(), null,
-					new Date(), null, ContentTypes.TEXT_HTML, "employee", "employee", null,
-					null, null, 0, 0, null);
+					new Date(), null, ContentTypes.TEXT_HTML, "employee", "employee", null, null, null, 0, 0, null);
 			Indexer<Employee> indexer = IndexerRegistryUtil.nullSafeGetIndexer(Employee.class);
 			indexer.reindex(employee);
 
@@ -244,6 +259,9 @@ public class EmployeeWebPortlet extends MVCPortlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		renderRequest.setAttribute(EmployeePortletConfiguration.class.getName(),
+				_getEmpPortletConfiguration(renderRequest));
 
 		super.render(renderRequest, renderResponse);
 

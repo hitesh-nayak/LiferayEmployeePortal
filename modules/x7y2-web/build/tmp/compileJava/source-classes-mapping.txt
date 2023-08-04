@@ -1,6 +1,6 @@
-com/acme/x7y2/web/internal/configuration/X7Y2PortletInstanceConfiguration.java
- com.acme.x7y2.web.internal.configuration.X7Y2PortletInstanceConfiguration
 com/acme/x7y2/web/internal/portlet/action/X7Y2ConfigurationAction.java
  com.acme.x7y2.web.internal.portlet.action.X7Y2ConfigurationAction
+com/acme/x7y2/web/internal/configuration/X7Y2PortletInstanceConfiguration.java
+ com.acme.x7y2.web.internal.configuration.X7Y2PortletInstanceConfiguration
 com/acme/x7y2/web/internal/portlet/X7Y2Portlet.java
  com.acme.x7y2.web.internal.portlet.X7Y2Portlet

@@ -22,7 +22,7 @@ import org.osgi.service.component.annotations.Component;
 	property = {
 		"com.liferay.portlet.display-category=category.sample",
 		"javax.portlet.display-name=X7Y2 Portlet",
-		"javax.portlet.init-param.config-template=/configuration.jsp",
+				"javax.portlet.init-param.config-template=/configuration.jsp",
 		"javax.portlet.init-param.view-template=/view.jsp",
 		"javax.portlet.name=com_acme_x7y2_web_internal_portlet_X7Y2Portlet"
 	},
